@@ -1,0 +1,1 @@
+# copy of files im working on in my google cloud project.... it's taking too long to figure out how to run a g cloud project remotely while connected to github repo... so this is quick fix because editing with inline editor in the console sucks
