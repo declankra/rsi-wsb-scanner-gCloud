@@ -15,36 +15,32 @@ def getVariables(request):
         variables = request_json['variables']
         # Call the main processing function with the received variables
         main_process(variables)
-        print("variables from request_json: ", variables)  ## TEST
         return 'Variables processed successfully.', 200
     else:
         return 'No variables provided!', 400
 
 
 def main_process(variables):
-    print("main_process accessed") ## TEST
-    print("variables from main_process: ",variables) ## TEST
+    print("variables entered into main_process: ", variables) ## TEST
     # Extract the required variables
         # exchange = variables.get('exchange', None) // cancelling because exchange is defined in stockScreener.py 
-    MarketCapMoreThan = variables.get('MarketCapMoreThan', None)
-    PriceMoreThan = variables.get('PriceMoreThan', None)
-    VolumeMoreThan = variables.get('VolumeMoreThan', None)
-    
-    print("three get variables: ", MarketCapMoreThan, PriceMoreThan, VolumeMoreThan) ## TEST
-    
+    MarketCapMoreThan = variables.get('marketCapMoreThan', None)
+    PriceMoreThan = variables.get('priceMoreThan', None)
+    VolumeMoreThan = variables.get('volumeMoreThan', None)
+        
     # Check if all required variables are provided
     if None in [MarketCapMoreThan, PriceMoreThan, VolumeMoreThan]:
         print("none found in variables list")
         return json.dumps({"error": "Missing one or more required variables."}), 400
 
     # Call the stockScreener function with the extracted variables
-    stockScreener(MarketCapMoreThan, PriceMoreThan, VolumeMoreThan, FM_API_KEY)
+    result = stockScreener(MarketCapMoreThan, PriceMoreThan, VolumeMoreThan, FM_API_KEY) ## returns all filtered stock data
 
     # Placeholder for other function calls
     # e.g., fetch_stock_data(variables['ticker_symbol'])
     # You can add your business logic here, such as fetching data, performing analysis, etc.
 
-    return "Main processing completed successfully."
+    return print("Main processing completed successfully.")
 
 ''' testing within VS code
 if __name__ == "__main__":
