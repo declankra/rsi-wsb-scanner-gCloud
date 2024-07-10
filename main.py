@@ -29,14 +29,17 @@ def main_process(variables):
     MarketCapMoreThan = variables.get('marketCapMoreThan', None)
     PriceMoreThan = variables.get('priceMoreThan', None)
     VolumeMoreThan = variables.get('volumeMoreThan', None)
-        
+    
+    
     # Check if all required variables are provided
     if None in [MarketCapMoreThan, PriceMoreThan, VolumeMoreThan]:
         print("none found in variables list")
         return json.dumps({"error": "Missing one or more required variables."}), 400
 
+
     # Call the stockScreener function with the extracted core variables
     all_filtered_stocks = stockScreener(MarketCapMoreThan, PriceMoreThan, VolumeMoreThan, FM_API_KEY) ## returns all filtered stock data
+   
    
     # Extract the symbols from google cloud file
     screened_stocks_url = "https://storage.googleapis.com/daily_screened_stocks/screened_stocks.json"
@@ -46,16 +49,16 @@ def main_process(variables):
         symbols = [item['symbol'] for item in data]
         return symbols
     symbols = read_symbols_from_json(screened_stocks_url)
-    # print(symbols) ## test to check symbols extracted properly
 
     
-    """ # Call the rsiFilter function with the symbols and rsi variables to further filter out stocks
+    # Call the rsiFilter function with the symbols and rsi variables to further filter out stocks
     rsiPeriod = variables.get('rsiPeriod', None)
     rsiThreshold = variables.get('rsiThreshold', None)
-    rsi_filtered_stocks = rsiFilter(symbols, rsiPeriod, rsiThreshold)
-    """
+    rsi_filtered_stocks = rsiFilter(symbols, 14, 90)
+    print(rsi_filtered_stocks)
     
-    ## fetchStockData.py from yfinance
+    
+    # Call fetchStockData.py from yfinance
     
     """ # Call the volumeSpike function with the stock data and volume variables
     rsiPeriod = variables.get('rsiPeriod', None)
