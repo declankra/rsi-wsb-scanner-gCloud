@@ -30,6 +30,7 @@ def main_process(variables):
     
     # Check if all required variables are provided
     if None in [MarketCapMoreThan, PriceMoreThan, VolumeMoreThan]:
+        print("none found in variables list")
         return json.dumps({"error": "Missing one or more required variables."}), 400
 
     # Call the stockScreener function with the extracted variables
