@@ -5,6 +5,7 @@ import os
 from stockScreener import stockScreener  # Import the function
 from rsiFilter import rsiFilter  # Import the function
 import json
+import requests
 
 ## initialize runtime variables (private)
 # FM_API_KEY = os.getenv('FM_API_KEY')
@@ -36,9 +37,17 @@ def main_process(variables):
 
     # Call the stockScreener function with the extracted core variables
     all_filtered_stocks = stockScreener(MarketCapMoreThan, PriceMoreThan, VolumeMoreThan, FM_API_KEY) ## returns all filtered stock data
-    ## print(all_filtered_stocks) ## test to get filtered stocks
-    symbols = [stock['symbol'] for stock in all_filtered_stocks] # extracts the symbols
-    print(symbols) ## test to check symbols extracted properly
+   
+    # Extract the symbols from google cloud file
+    screened_stocks_url = "https://storage.googleapis.com/daily_screened_stocks/screened_stocks.json"
+    def read_symbols_from_json(screened_stocks_url):
+        response = requests.get(screened_stocks_url)
+        data = response.json()
+        symbols = [item['symbol'] for item in data]
+        return symbols
+    symbols = read_symbols_from_json(screened_stocks_url)
+    # print(symbols) ## test to check symbols extracted properly
+
     
     """ # Call the rsiFilter function with the symbols and rsi variables to further filter out stocks
     rsiPeriod = variables.get('rsiPeriod', None)
@@ -64,16 +73,17 @@ def main_process(variables):
 
     return print("Main processing completed successfully.")
 
-''' testing within VS code
+
+
+# testing within VS code
 if __name__ == "__main__":
     # Example variables for testing
     test_variables = {
-        "MarketCapMoreThan": 300000000,
-        "PriceMoreThan": 5,
-        "VolumeMoreThan": 500000
+        "marketCapMoreThan": 300000000,
+        "priceMoreThan": 5,
+        "volumeMoreThan": 500000
     }
     
     # Call the main_process function with the test variables
     result = main_process(test_variables)
     print(result)
-'''
