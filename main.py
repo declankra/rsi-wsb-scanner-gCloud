@@ -21,7 +21,7 @@ def getVariables(request):
 
 
 def main_process(variables):
-    
+    print("main_process accessed")
     # Extract the required variables
         # exchange = variables.get('exchange', None) // cancelling because exchange is defined in stockScreener.py 
     MarketCapMoreThan = variables.get('MarketCapMoreThan', None)
