@@ -21,7 +21,6 @@ def getVariables(request):
 
 def main_process(variables):
     
-    
     # Extract the required variables
         # exchange = variables.get('exchange', None) cancelling
     MarketCapMoreThan = variables.get('MarketCapMoreThan', None)

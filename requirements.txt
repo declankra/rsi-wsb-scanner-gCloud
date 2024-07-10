@@ -4,3 +4,4 @@ yfinance
 requests
 markupsafe
 google.cloud
+flask
