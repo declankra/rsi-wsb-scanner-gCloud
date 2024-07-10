@@ -15,6 +15,7 @@ def getVariables(request):
         variables = request_json['variables']
         # Call the main processing function with the received variables
         main_process(variables)
+        print("variables from request_json: ", variables)  ## TEST
         return 'Variables processed successfully.', 200
     else:
         return 'No variables provided!', 400
@@ -22,13 +23,14 @@ def getVariables(request):
 
 def main_process(variables):
     print("main_process accessed") ## TEST
+    print("variables from main_process: ",variables) ## TEST
     # Extract the required variables
         # exchange = variables.get('exchange', None) // cancelling because exchange is defined in stockScreener.py 
     MarketCapMoreThan = variables.get('MarketCapMoreThan', None)
     PriceMoreThan = variables.get('PriceMoreThan', None)
     VolumeMoreThan = variables.get('VolumeMoreThan', None)
     
-    print(MarketCapMoreThan, PriceMoreThan, VolumeMoreThan) ## TEST
+    print("three get variables: ", MarketCapMoreThan, PriceMoreThan, VolumeMoreThan) ## TEST
     
     # Check if all required variables are provided
     if None in [MarketCapMoreThan, PriceMoreThan, VolumeMoreThan]:
