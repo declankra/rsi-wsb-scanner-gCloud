@@ -3,7 +3,7 @@ from markupsafe import escape
 from flask import request
 import os
 from stockScreener import stockScreener  # Import the function
-from rsiFilter import rsiFiler  # Import the function
+from rsiFilter import rsiFilter  # Import the function
 import json
 
 ## initialize runtime variables (private)
