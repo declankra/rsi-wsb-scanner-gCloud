@@ -12,6 +12,7 @@ def getVariables(request):
     request_json = request.get_json(silent=True)
     if request_json and 'variables' in request_json:
         variables = request_json['variables']
+        print(variables) # for testing purposes: to get file to test function in VS Code
         # Call the main processing function with the received variables
         main_process(variables)
         return 'Variables processed successfully.', 200
