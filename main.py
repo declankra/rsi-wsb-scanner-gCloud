@@ -33,7 +33,7 @@ def main_process(variables):
         return json.dumps({"error": "Missing one or more required variables."}), 400
 
     # Call the stockScreener function with the extracted variables
-    result = stockScreener(MarketCapMoreThan, PriceMoreThan, VolumeMoreThan, FM_API_KEY)
+    stockScreener(MarketCapMoreThan, PriceMoreThan, VolumeMoreThan, FM_API_KEY)
 
     # Placeholder for other function calls
     # e.g., fetch_stock_data(variables['ticker_symbol'])
