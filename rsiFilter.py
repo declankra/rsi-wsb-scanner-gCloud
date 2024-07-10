@@ -13,8 +13,9 @@ def calculate_rsi(data, period): # rsi value from google sheet OR 14 day period 
 
 def fetch_and_calculate_rsi(symbols, period, threshold):
     rsi_values = {}
+    print("fetching stock data and calculating RSI to create list")
     for symbol in symbols:
-        data = yf.download(symbol, period="1mo")
+        data = yf.download(symbol, period="1mo", progress = False)
         if not data.empty:
             rsi = calculate_rsi(data, period)
             rsi_last = rsi.iloc[-1]
