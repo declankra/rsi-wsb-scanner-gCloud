@@ -77,7 +77,7 @@ def main_process(variables):
     return print("Main processing completed successfully.")
 
 
-
+""""
 # testing within VS code
 if __name__ == "__main__":
     # Example variables for testing
@@ -90,3 +90,4 @@ if __name__ == "__main__":
     # Call the main_process function with the test variables
     result = main_process(test_variables)
     print(result)
+"""
