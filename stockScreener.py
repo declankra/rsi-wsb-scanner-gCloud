@@ -7,6 +7,7 @@ exchanges = ['nyse', 'nasdaq'] ## not including amex
 all_filtered_stocks = []
 
 def stockScreener(MarketCapMoreThan, PriceMoreThan, VolumeMoreThan, FM_API_KEY):
+    print("stockScreener function called")
     for exchange in exchanges:
         filtered_stocks = fetch_filtered_stocks_for_exchange(MarketCapMoreThan, PriceMoreThan, VolumeMoreThan, FM_API_KEY, exchange) # add exchange to call
         all_filtered_stocks.extend(filtered_stocks)
