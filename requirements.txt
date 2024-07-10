@@ -5,3 +5,4 @@ requests
 markupsafe
 google.cloud
 flask
+google-cloud-storage
