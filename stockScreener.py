@@ -40,15 +40,19 @@ def fetch_filtered_stocks_for_exchange(MarketCapMoreThan, PriceMoreThan, VolumeM
 
 def save_to_cloud_storage(data, filename, bucket_name):
     """Save data to a file in Google Cloud Storage"""
-    storage_client = storage.Client()
-    bucket = storage_client.bucket(bucket_name)
-    blob = bucket.blob(filename)
+    try:
+        storage_client = storage.Client()
+        bucket = storage_client.bucket(bucket_name)
+        blob = bucket.blob(filename)
 
-    # Convert the data to a JSON string
-    data_string = json.dumps(data, indent=4)
-    # Upload the data
-    blob.upload_from_string(data_string, content_type='application/json')
-    print(f"File {filename} uploaded to {bucket_name}.")
+        # Convert the data to a JSON string
+        data_string = json.dumps(data, indent=4)
+        
+        # Upload the data
+        blob.upload_from_string(data_string, content_type='application/json')
+        print(f"File {filename} uploaded to {bucket_name}.")
+    except Exception as e:
+        print(f"Failed to upload file {filename} to {bucket_name}: {e}")
 
 
 
