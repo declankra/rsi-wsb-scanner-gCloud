@@ -29,3 +29,32 @@ def fetch_and_calculate_rsi(symbols, period, threshold):
 def rsiFilter(symbols, rsiPeriod, rsiThreshold):
     rsi_values = fetch_and_calculate_rsi(symbols, rsiPeriod, rsiThreshold)
     return rsi_values
+
+
+""""
+def fetch_and_calculate_rsi_single(symbol, period, threshold):
+    try:
+        data = yf.download(symbol, period="1mo", progress=False)
+        if data.empty:
+            print(f"Warning: No data available for {symbol}")
+            return symbol, None
+        rsi = calculate_rsi(data, period)
+        rsi_last = rsi.iloc[-1]
+        if rsi_last > threshold:
+            return symbol, rsi_last
+    except Exception as e:
+        print(f"Error processing {symbol}: {str(e)}")
+    return symbol, None
+
+def fetch_and_calculate_rsi(symbols, period, threshold):
+    rsi_values = {}
+    print("Fetching stock data and calculating RSI to create list")
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        futures = [executor.submit(fetch_and_calculate_rsi_single, symbol, period, threshold) for symbol in symbols]
+        for future in as_completed(futures):
+            symbol, rsi_value = future.result()
+            if rsi_value is not None:
+                rsi_values[symbol] = rsi_value
+    return rsi_values
+
+"""
