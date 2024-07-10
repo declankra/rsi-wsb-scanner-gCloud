@@ -36,12 +36,14 @@ def main_process(variables):
 
     # Call the stockScreener function with the extracted core variables
     all_filtered_stocks = stockScreener(MarketCapMoreThan, PriceMoreThan, VolumeMoreThan, FM_API_KEY) ## returns all filtered stock data
-    print(all_filtered_stocks) ## test to get filtered stocks
+    ## print(all_filtered_stocks) ## test to get filtered stocks
+    symbols = [stock['symbol'] for stock in all_filtered_stocks] # extracts the symbols
+    print(symbols) ## test to check symbols extracted properly
     
     """ # Call the rsiFilter function with the symbols and rsi variables to further filter out stocks
     rsiPeriod = variables.get('rsiPeriod', None)
     rsiThreshold = variables.get('rsiThreshold', None)
-    rsi_filtered_stocks = rsiFilter(all_filtered_stocks, rsiPeriod, rsiThreshold)
+    rsi_filtered_stocks = rsiFilter(symbols, rsiPeriod, rsiThreshold)
     """
     
     ## fetchStockData.py from yfinance
