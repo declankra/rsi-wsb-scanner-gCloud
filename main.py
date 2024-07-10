@@ -3,6 +3,7 @@ from markupsafe import escape
 from flask import request
 import os
 from stockScreener import stockScreener  # Import the function
+from rsiFilter import rsiFiler  # Import the function
 import json
 
 ## initialize runtime variables (private)
@@ -33,8 +34,27 @@ def main_process(variables):
         print("none found in variables list")
         return json.dumps({"error": "Missing one or more required variables."}), 400
 
-    # Call the stockScreener function with the extracted variables
-    result = stockScreener(MarketCapMoreThan, PriceMoreThan, VolumeMoreThan, FM_API_KEY) ## returns all filtered stock data
+    # Call the stockScreener function with the extracted core variables
+    all_filtered_stocks = stockScreener(MarketCapMoreThan, PriceMoreThan, VolumeMoreThan, FM_API_KEY) ## returns all filtered stock data
+    print(all_filtered_stocks) ## test to get filtered stocks
+    
+    """ # Call the rsiFilter function with the symbols and rsi variables to further filter out stocks
+    rsiPeriod = variables.get('rsiPeriod', None)
+    rsiThreshold = variables.get('rsiThreshold', None)
+    rsi_filtered_stocks = rsiFilter(all_filtered_stocks, rsiPeriod, rsiThreshold)
+    """
+    
+    ## fetchStockData.py from yfinance
+    
+    """ # Call the volumeSpike function with the stock data and volume variables
+    rsiPeriod = variables.get('rsiPeriod', None)
+    rsiThreshold = variables.get('rsiThreshold', None)
+    rsi_filtered_stocks = rsiFilter(all_filtered_stocks, rsiPeriod, rsiThreshold)
+    
+    etc etc
+    """
+
+
 
     # Placeholder for other function calls
     # e.g., fetch_stock_data(variables['ticker_symbol'])
