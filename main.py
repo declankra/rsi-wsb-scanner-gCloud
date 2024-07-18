@@ -10,6 +10,9 @@ import requests
 from fetchStockData import fetch_stock_data
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
+from googleapiclient.discovery import build
+import google.auth
+
 
 ### initialize runtime variables
 # FM_API_KEY = os.getenv('FM_API_KEY')
@@ -20,7 +23,7 @@ def getVariables(request):
     request_json = request.get_json(silent=True)
     if request_json and 'variables' in request_json: # check if legit
         variables = request_json['variables']
-        print('Variables processed successfully')
+        print('Variablesprocessed successfully')
         # Call the main processing function with the received variables
         main_process(variables)
         return 'Data has been successfully appended to sheet', 200
@@ -62,9 +65,16 @@ def main_process(variables):
     print(rsi_filtered_stocks)
     
     
-    ### Google sheet auth
+    ### Google sheet auth # note: realizing I could've passed everything from the gSheet to here at the beginning
+    credentials, _ = google.auth.default(scopes=['https://www.googleapis.com/auth/spreadsheets'])
+    service = build('sheets', 'v4', credentials=credentials)
+    SPREADSHEET_ID = ("")
+    RESULTS_SHEET_NAME = ("") #
+    HISTORY_SHEET_NAME = ("")
+
+
     
-     
+    
     ### Setup dataframes that will ultimately get exported to sheets at the end with calcs
     # create columns based off google sheet column headers
     gSheetResultColumns = ['Date', 'Symbol', 'RSI', 'perDiffVolP1', 'perDiffVolP2', 'perDiffVolP3', 'perDiffSmaP1', 'perDiffSmaP2', 'perDiffSmaP3', 'perDiffUpBandP1', 'perDiffUpBandP2', 'stochSignal', 'perDiffStochThresh', 'incResult1', 'incResult2', 'incResult3', 'incResult4', 'relSubmissionStrength', 'relCommentStrength']
