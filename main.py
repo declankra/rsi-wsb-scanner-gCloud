@@ -8,7 +8,8 @@ from rsiFilterBatch import rsiFilter # Import the function
 import json
 import requests
 from fetchStockData import fetch_stock_data
-
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 
 ### initialize runtime variables
 # FM_API_KEY = os.getenv('FM_API_KEY')
