@@ -1,6 +1,7 @@
 ### instead of fetching data for each symbol individually, yfinance allows for downloading of multiple symbols at once so we make "batch" requests
 ### instead of calculating rsi after each individual download, do vectorized calcs on entire series
 ### group_by = "ticker" organizes data download by symbol, making it easier to process each symbol's data (?)
+### new stocks return errors: not all symbols imported have period > 1mo, which returns rror
 
 import yfinance as yf
 import pandas as pd
