@@ -93,8 +93,8 @@ def main_process(user_variables,result_headers,history_headers):
     tol3 = user_variables.get('tol3', None)
     tol4 = user_variables.get('tol4', None)
     # strengthRedditSubmissions
-    recentPeriod = recentPeriod.get('numStdv', None)
-    longerPeriod = longerPeriod.get('bbandP1', None)
+    recentPeriod = user_variables.get('recentPeriod', None)
+    longerPeriod = user_variables.get('longerPeriod', None)
     # strengthRedditDailyComments = none
     ## results_headers
     
