@@ -8,10 +8,10 @@ from rsiFilterBatch import rsiFilter # Import the function
 import json
 import requests
 from fetchStockData import fetch_stock_data
-import gspread
+##import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from googleapiclient.discovery import build
-import google.auth
+##import google.auth
 
 
 ### initialize runtime variables
