@@ -38,7 +38,7 @@ def main_process(variables):
 
 
     # Call the stockScreener function with the extracted core variables
-    all_filtered_stocks = stockScreener(MarketCapMoreThan, PriceMoreThan, VolumeMoreThan, FM_API_KEY) ## returns all filtered stock data
+    all_filtered_stocks = stockScreener(MarketCapMoreThan, PriceMoreThan, VolumeMoreThan, FM_API_KEY) ## returns all filtered stock's info data (and saves to gCloud screened_stocks.json)
    
    
     # Extract the symbols from google cloud file
@@ -58,6 +58,8 @@ def main_process(variables):
     print(rsi_filtered_stocks)
     
     # Call fetchStockData.py from yfinance
+    
+    
     
     
     """ # Call the volumeSpike function with the stock data and volume variables
