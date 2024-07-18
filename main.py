@@ -54,11 +54,11 @@ def main_process(variables):
     # Call the rsiFilter function with the symbols and rsi variables to further filter out stocks
     rsiPeriod = variables.get('rsiPeriod', None)
     rsiThreshold = variables.get('rsiThreshold', None)
-    rsi_filtered_stocks = rsiFilter(symbols, 14, 90) ####!!!!!! add 14, 90 if testing locally
+    rsi_filtered_stocks = rsiFilter(symbols, rsiPeriod, rsiThreshold) ####!!!!!! add 14, 90 if testing locally
     print(rsi_filtered_stocks)
     
-    
     # Call fetchStockData.py from yfinance
+    
     
     """ # Call the volumeSpike function with the stock data and volume variables
     rsiPeriod = variables.get('rsiPeriod', None)
