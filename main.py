@@ -8,10 +8,6 @@ from rsiFilterBatch import rsiFilter # Import the function
 import json
 import requests
 from fetchStockData import fetch_stock_data
-##import gspread
-from oauth2client.service_account import ServiceAccountCredentials
-from googleapiclient.discovery import build
-##import google.auth
 
 
 ### initialize runtime variables
@@ -117,16 +113,10 @@ def main_process(user_variables,result_headers,history_headers):
     
     
     
-    """"
-    ###
-    ### Google sheet auth # fix: got 
-    credentials, _ = google.auth.default(scopes=['https://www.googleapis.com/auth/spreadsheets'])
-    service = build('sheets', 'v4', credentials=credentials)
+    """
     SPREADSHEET_ID = ("")
     RESULTS_SHEET_NAME = ("") #
     HISTORY_SHEET_NAME = ("")
-
-
     """
     
     ### Setup dataframes that will ultimately get exported to sheets at the end with calcs
@@ -144,11 +134,10 @@ def main_process(user_variables,result_headers,history_headers):
      # init DataFrames with columns
     gSheetsResultsDF = pd.DataFrame(columns=gSheetResultColumns)
     gSheetsHistoryDF = pd.DataFrame(columns=gSheetHistoryColumns)
-    # 
+    
     
 
    
-    
     ### FOR EACH SYMBOL in RSI FILTERED STOCKS
         ## call a single function to calculate each parameter for google sheets
         ##symbol_gSheetResult[], symbol_gSheetHistory[] = masterCalcFunction(symbol)
@@ -164,7 +153,7 @@ def main_process(user_variables,result_headers,history_headers):
             # strengthRedditDailyComments.py: comments calc
 
     
-    ### call a function to write the full data frame to google sheets
+    ### call a function to write the full data frame to google sheets OR just return the whole dataframe and have the script write it
     ## write_to_sheets(gSheetsResultsDF,gSheetsHistoryDF)
         
         
