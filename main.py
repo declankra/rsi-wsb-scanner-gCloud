@@ -1,4 +1,4 @@
-
+import datetime
 from markupsafe import escape
 from flask import request
 import os
@@ -54,8 +54,23 @@ def main_process(variables):
     # Call the rsiFilter function with the symbols and rsi variables to further filter out stocks
     rsiPeriod = variables.get('rsiPeriod', None)
     rsiThreshold = variables.get('rsiThreshold', None)
-    rsi_filtered_stocks = rsiFilter(symbols, rsiPeriod, rsiThreshold) ####!!!!!! add 14, 90 if testing locally
+    rsi_filtered_stocks = rsiFilter(symbols, 14, 90) ####!!!!!! add 14, 90 if testing locally
     print(rsi_filtered_stocks)
+    
+    
+    
+    ## Create the master array for each filtered symbol that will contain the calcs/results to append to google sheet
+    # List of variables for each array
+    gSheetResultVars = ['Date', 'Symbol', 'RSI', 'perDiffVolP1', 'perDiffVolP2', 'perDiffVolP3', 'perDiffSmaP1', 'perDiffSmaP2', 'perDiffSmaP3', 'perDiffUpBandP1', 'perDiffUpBandP2', 'stochSignal', 'perDiffStochThresh', 'incResult1', 'incResult2', 'incResult3', 'incResult4', 'relSubmissionStrength', 'relCommentStrength']
+    # Get current date
+    current_date = datetime.datetime.now().strftime('%m-%d-%y')
+    # Create a dictionary to store the arrays
+    symbol_arrays = {symbol: [current_date, symbol, rsi_filtered_stocks[symbol]] + [None] * (len(variables) - 3) for symbol in rsi_filtered_stocks.keys()}
+    # Print the result to verify
+    for symbol, array in symbol_arrays.items():
+        print(f"{symbol}: {array}")
+    
+    
     
     # Call fetchStockData.py from yfinance
     
