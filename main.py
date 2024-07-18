@@ -66,7 +66,7 @@ def main_process(user_variables,result_headers,history_headers):
     ### Call the rsiFilter function with the symbols and user configured RSI variables to further filter out stocks
     rsiPeriod = user_variables.get('rsiPeriod', None)
     rsiThreshold = user_variables.get('rsiThreshold', None)
-    rsi_filtered_stocks = rsiFilter(symbols, 14, 90) ####!!!!!! add 14, 90 if testing locally
+    rsi_filtered_stocks = rsiFilter(symbols, rsiPeriod, rsiThreshold) ####!!!!!! add 14, 90 if testing locally
     print(rsi_filtered_stocks)
     
     
@@ -191,7 +191,7 @@ def main_process(user_variables,result_headers,history_headers):
     return print("Main processing completed successfully.")
 
 
-
+"""""
 # testing within VS code
 if __name__ == "__main__":
     # Example variables for testing
@@ -204,3 +204,4 @@ if __name__ == "__main__":
     # Call the main_process function with the test variables
     result = main_process(test_variables)
     print(result)
+"""""
