@@ -21,27 +21,32 @@ FM_API_KEY = 'Ke0ioOh8J93IRZJc1UDaTHMJSsf0JIMg' # setting it publicly because fu
 ### entrance function: process user configured variables from google sheets
 def getVariables(request):
     request_json = request.get_json(silent=True)
-    if request_json and 'variables' in request_json: # check if legit
-        variables = request_json['variables']
-        print('Variablesprocessed successfully')
+    if request_json and 'user_variables' and 'result_headers' and 'history_headers' in request_json: # check if legit
+        user_variables = request_json['user_variables']
+        result_headers = request_json['result_headers']
+        history_headers = request_json['history_headers']
+        print('sheet data received successfully')
         # Call the main processing function with the received variables
-        main_process(variables)
+        main_process(user_variables,result_headers,history_headers)
         return 'Data has been successfully appended to sheet', 200
     else:
         return 'No variables provided!', 400
 
 
-def main_process(variables):
-    print("variables entered into main_process: ", variables) ## TEST
-    ### Extract the initial required variables ---- note: rest of the variables will be extracted later
-    MarketCapMoreThan = variables.get('marketCapMoreThan', None)
-    PriceMoreThan = variables.get('priceMoreThan', None)
-    VolumeMoreThan = variables.get('volumeMoreThan', None)
+def main_process(user_variables,result_headers,history_headers):
+    print("user_variables entered into main_process: ", user_variables) ## TEST
+    print("result_headers entered into main_process: ", user_variables) ## TEST
+    print("history_headers entered into main_process: ", user_variables) ## TEST
+    
+    ### Extract the initial required user_variables ---- note: rest of the variables will be extracted later
+    MarketCapMoreThan = user_variables.get('marketCapMoreThan', None)
+    PriceMoreThan = user_variables.get('priceMoreThan', None)
+    VolumeMoreThan = user_variables.get('volumeMoreThan', None)
         # exchange = variables.get('exchange', None) // cancelling because exchange is defined in stockScreener.py 
         
     # Check if all required variables are provided
     if None in [MarketCapMoreThan, PriceMoreThan, VolumeMoreThan]:
-        print("none found in variables list")
+        print("none found in user_variables list")
         return json.dumps({"error": "Missing one or more required variables."}), 400
 
 
@@ -59,13 +64,62 @@ def main_process(variables):
 
     
     ### Call the rsiFilter function with the symbols and user configured RSI variables to further filter out stocks
-    rsiPeriod = variables.get('rsiPeriod', None)
-    rsiThreshold = variables.get('rsiThreshold', None)
+    rsiPeriod = user_variables.get('rsiPeriod', None)
+    rsiThreshold = user_variables.get('rsiThreshold', None)
     rsi_filtered_stocks = rsiFilter(symbols, 14, 90) ####!!!!!! add 14, 90 if testing locally
     print(rsi_filtered_stocks)
     
     
-    ### Google sheet auth # note: realizing I could've passed everything from the gSheet to here at the beginning
+    ### extract the rest of the values from google sheet
+    ## remaining user_variables
+    # volumeSpike
+    volP1 = user_variables.get('volP1', None)
+    volP2 = user_variables.get('volP2', None)
+    volP3 = user_variables.get('volP3', None)
+    # sma
+    smaP1 = user_variables.get('smaP1', None)
+    smaP2 = user_variables.get('smaP2', None)
+    smaP3 = user_variables.get('smaP3', None)
+    # bbandUpperDiff
+    bbandP1 = user_variables.get('bbandP1', None)
+    bbandP2 = user_variables.get('bbandP2', None)
+    numStdv = user_variables.get('numStdv', None)
+    # stoch
+    stochPeriod = user_variables.get('stochPeriod', None)
+    stochThreshold = user_variables.get('stochThreshold', None)
+    # prettyNum
+    inc1 = user_variables.get('inc1', None)
+    inc2 = user_variables.get('inc2', None)
+    inc3 = user_variables.get('inc3', None)
+    inc4 = user_variables.get('inc4', None)
+    tol1 = user_variables.get('tol1', None)
+    tol2 = user_variables.get('tol2', None)
+    tol3 = user_variables.get('tol3', None)
+    tol4 = user_variables.get('tol4', None)
+    # strengthRedditSubmissions
+    recentPeriod = recentPeriod.get('numStdv', None)
+    longerPeriod = longerPeriod.get('bbandP1', None)
+    # strengthRedditDailyComments = none
+    ## results_headers
+    
+    ## history_headers
+
+
+
+    
+
+    
+
+
+    
+    
+    
+    
+    
+    
+    """"
+    ###
+    ### Google sheet auth # fix: got 
     credentials, _ = google.auth.default(scopes=['https://www.googleapis.com/auth/spreadsheets'])
     service = build('sheets', 'v4', credentials=credentials)
     SPREADSHEET_ID = ("")
@@ -73,7 +127,7 @@ def main_process(variables):
     HISTORY_SHEET_NAME = ("")
 
 
-    
+    """
     
     ### Setup dataframes that will ultimately get exported to sheets at the end with calcs
     # create columns based off google sheet column headers
