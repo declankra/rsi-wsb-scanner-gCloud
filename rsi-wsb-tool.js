@@ -62,6 +62,9 @@ function sendVariablesToCloudFunction() {
       }
     }
     
+    print(responseData.gSheetsHistoryDF)
+    print(responseData.gSheetsResultsDF)
+
     // Append gSheetsResultsDF to "03: see results" sheet
     if (responseData.gSheetsResultsDF) {
       appendDataToSheet(resultSheet, responseData.gSheetsResultsDF);
