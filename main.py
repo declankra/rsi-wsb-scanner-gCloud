@@ -11,6 +11,8 @@ from fetchStockData import fetch_stock_data
 import numpy as np
 from volumeSpike import volumeSpike
 from sma import sma
+from bbandUpperRel import bbandUpperRel
+from stoch import stoch
 
 
 ### initialize runtime variables
@@ -120,7 +122,7 @@ def main_process(user_variables,result_headers,history_headers):
         perDiffVolP1, perDiffVolP2, perDiffVolP3 = volumeSpike(stockData, volP1, volP2, volP3)
         perDiffSmaP1, perDiffSmaP2, perDiffSmaP3 = sma(stockData, smaP1, smaP2, smaP3)
         perDiffUpBandP1, perDiffUpBandP2 = bbandUpperRel(stockData, bbandP1, bbandP2, numStdv)
-        stochSignal, perDiffStochThresh, stochIndicator = stoch.py(stockData, stochPeriod, stochThreshold)
+        stochSignal, perDiffStochThresh, stochIndicator = stoch(stockData, stochPeriod, stochThreshold)
         incResult1, incResult2, incResult3, incResult4 = prettyNum(stockData, inc1, inc2, inc3, inc4, tol1, tol2, tol3, tol4)
         # macd --- ignore
         relSubmissionStrength, totalSubmissions, submissionTickerMentions = strengthRedditSubmissions(stockData, recentPeriod, longerPeriod)
