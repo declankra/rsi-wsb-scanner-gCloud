@@ -17,14 +17,14 @@ def find_daily_discussion_comments(ticker, subreddit="wallstreetbets"):
     total_comments = 0
 
     # Fetch recent submissions from the subreddit
-    for submission in reddit.subreddit(subreddit).new(limit=100):  # Adjust limit as needed
+    for submission in reddit.subreddit(subreddit).new(limit=50):  # Adjust limit as needed
         submission_date = datetime.utcfromtimestamp(submission.created_utc)
         # Check if the submission is a Daily Discussion thread by flair and within the last 5 days
         if submission.link_flair_text == "Daily Discussion" and (today - submission_date).days <= 5:
             found_submission = True
-            submission.comments.replace_more(limit=20)  # Attempt to load up to 1000 comments
+            submission.comments.replace_more(limit=0) # Do not load more comments
             comment_list = submission.comments.list()
-            # If the list is too large, slice it to the first 1000 comments
+            # If the list is too large, slice it to the first 2000 comments
             comment_list = comment_list[:2000]
             for comment in comment_list:
                 total_comments += 1
