@@ -1,11 +1,8 @@
 ### instead of fetching data for each symbol individually, yfinance allows for downloading of multiple symbols at once so we make "batch" requests
 ### instead of calculating rsi after each individual download, do vectorized calcs on entire series
 ### group_by = "ticker" organizes data download by symbol, making it easier to process each symbol's data (?)
-### new stocks return errors: not all symbols imported have period > 1mo, which returns rror
-### improved batch processing (for single and multiple symbol cases) and parallel processing using threadpoolexecutor
-### try excep blocks for error handling
+### new stocks return errors: not all symbols imported have period > 1mo, which returns error
 
-import time
 import yfinance as yf
 import pandas as pd
 import numpy as np
@@ -23,41 +20,32 @@ def calculate_rsi_vectorized(data, period):
     rs = avg_gain / avg_loss
     return 100 - (100 / (1 + rs))
 
-
 def fetch_and_calculate_rsi_batch(symbols, period, threshold):
+    data = yf.download(symbols, period="1mo", group_by="ticker", progress=False)
     results = {}
     for symbol in symbols:
-        try:
-            ticker = yf.Ticker(symbol)
-            data = ticker.history(period="1mo")
-            if not data.empty and len(data) > period:
-                rsi = calculate_rsi_vectorized(data['Close'], period)
+        if symbol in data.columns:
+            symbol_data = data[symbol]['Close']
+            if not symbol_data.empty:
+                rsi = calculate_rsi_vectorized(symbol_data, period)
                 rsi_last = rsi.iloc[-1]
                 if rsi_last > threshold:
                     results[symbol] = rsi_last
-            else:
-                print(f"Warning: Insufficient data for {symbol}")
-        except Exception as e:
-            print(f"Error processing {symbol}: {e}")
+        else:
+            print(f"Warning: No data available for {symbol}")
     return results
 
 def rsiFilter(symbols, rsiPeriod, rsiThreshold):
-    batch_size = 50  # Reduced batch size to minimize potential errors
+    batch_size = 250  # Adjust this value based on your needs and API limitations
     results = {}
     
-    with ThreadPoolExecutor(max_workers=5) as executor:
-        futures = []
-        for i in range(0, len(symbols), batch_size):
-            batch = symbols[i:i+batch_size]
-            futures.append(executor.submit(fetch_and_calculate_rsi_batch, batch, rsiPeriod, rsiThreshold))
-            time.sleep(1)  # Add a delay to avoid rate limiting
-        
-        for future in as_completed(futures):
-            results.update(future.result())
-    
+    for i in range(0, len(symbols), batch_size):
+        batch = symbols[i:i+batch_size]
+        batch_results = fetch_and_calculate_rsi_batch(batch, rsiPeriod, rsiThreshold)
+        results.update(batch_results)
     return results
 
-""""
+
 # Example usage
 if __name__ == "__main__":
     symbols = ["MORF", "IMMR", "ZNTE", "ARDT", "PLD"]  # Add more symbols as needed
@@ -65,6 +53,4 @@ if __name__ == "__main__":
     rsi_threshold = 70
     
     filtered_symbols = rsiFilter(symbols, rsi_period, rsi_threshold)
-    print("Filtered symbols:", filtered_symbols)
-    print(f"Processed {len(symbols)} symbols, {len(filtered_symbols)} passed the RSI threshold.")
-"""
+    print(filtered_symbols)
