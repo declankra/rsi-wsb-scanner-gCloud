@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from markupsafe import escape
 from flask import request
 import os
@@ -8,6 +8,7 @@ from rsiFilterBatch import rsiFilter # Import the function
 import json
 import requests
 from fetchStockData import fetch_stock_data
+import numpy as np
 
 
 ### initialize runtime variables
@@ -31,9 +32,9 @@ def getVariables(request):
 
 def main_process(user_variables,result_headers,history_headers):
     print("user_variables entered into main_process: ", user_variables) ## TEST
-    print("result_headers entered into main_process: ", user_variables) ## TEST
-    print("history_headers entered into main_process: ", user_variables) ## TEST
-    
+    print("result_headers entered into main_process: ", result_headers) ## TEST
+    print("history_headers entered into main_process: ", history_headers) ## TEST
+
     ### Extract the initial required user_variables ---- note: rest of the variables will be extracted later
     MarketCapMoreThan = user_variables.get('marketCapMoreThan', None)
     PriceMoreThan = user_variables.get('priceMoreThan', None)
@@ -96,70 +97,63 @@ def main_process(user_variables,result_headers,history_headers):
     recentPeriod = user_variables.get('recentPeriod', None)
     longerPeriod = user_variables.get('longerPeriod', None)
     # strengthRedditDailyComments = none
-    ## results_headers
-    
-    ## history_headers
+    ## results_headers = directly imported in dataframe initialization
+    ## history_headers = directly imported in dataframe initialization
 
 
-
-    
-
-    
-
-
-    
-    
-    
-    
-    
-    
-    """
-    SPREADSHEET_ID = ("")
-    RESULTS_SHEET_NAME = ("") #
-    HISTORY_SHEET_NAME = ("")
-    """
-    
-    ### Setup dataframes that will ultimately get exported to sheets at the end with calcs
-    # create columns based off google sheet column headers
-    gSheetResultColumns = ['Date', 'Symbol', 'RSI', 'perDiffVolP1', 'perDiffVolP2', 'perDiffVolP3', 'perDiffSmaP1', 'perDiffSmaP2', 'perDiffSmaP3', 'perDiffUpBandP1', 'perDiffUpBandP2', 'stochSignal', 'perDiffStochThresh', 'incResult1', 'incResult2', 'incResult3', 'incResult4', 'relSubmissionStrength', 'relCommentStrength']
-    gSheetHistoryColumns = [ "Date", "exchange", "marketCapMoreThan", "priceMoreThan", "volumeMoreThan", "rsiThreshold", 
-    "rsiPeriod", "Symbol", "RSI", "technical score", "social score", "volP1", "volP2", "volP3", 
-    "perDiffVolP1", "perDiffVolP2", "perDiffVolP3", "smaP1", "smaP2", "smaP3", "perDiffSmaP1", 
-    "perDiffSmaP2", "perDiffSmaP3", "bbandP1", "bbandP2", "numStdv", "perDiffUpBandP1", 
-    "perDiffUpBandP2", "stochPeriod", "stochThreshold", "stochIndicator", "stochSignal", 
-    "perDiffStochThresh", "inc1", "inc2", "inc3", "inc4", "tol1", "tol2", "tol3", "tol4", 
-    "incResult1", "incResult2", "incResult3", "incResult4", "recentPeriod", "longerPeriod", 
-    "totalSubmissions", "submissionTickerMentions", "relSubmissionStrength", "totalComments", 
-    "commentTickerMentions", "relCommentStrength" ]
-     # init DataFrames with columns
-    gSheetsResultsDF = pd.DataFrame(columns=gSheetResultColumns)
-    gSheetsHistoryDF = pd.DataFrame(columns=gSheetHistoryColumns)
-    
-    
+    ### Setup DataFrames with columns that will ultimately get returned back to google sheets appscript
+    gSheetsResultsDF = pd.DataFrame(columns=result_headers)
+    gSheetsHistoryDF = pd.DataFrame(columns=history_headers)
+       
 
    
-    ### FOR EACH SYMBOL in RSI FILTERED STOCKS
-        ## call a single function to calculate each parameter for google sheets
-        ##symbol_gSheetResult[], symbol_gSheetHistory[] = masterCalcFunction(symbol)
-            ## create the array
-            # fetchStockData.py: fetch data from yfinance and save as array
-            # volumeSpike.py: volume spike calc
-            # sma.py: sma calc
-            # bbandUpperRel.py: bband calc
-            # stoch.py: stoch calc
-            # prettyNum.py: pretty num calc
-            # macd --- ignore
-            # strengthRedditSubmissions.py: submissions calc
-            # strengthRedditDailyComments.py: comments calc
+    for symbol in rsi_filtered_stocks.keys(): ### FOR EACH SYMBOL in RSI FILTERED STOCKS
+        # symbol_gSheetResult, symbol_gSheetHistory = paramCalcs(symbol) ## call a single function to calculate each parameter for google sheets
+        # create the dictionary
+        # symbol_gSheetResult = {}
+        # symbol_gSheetHistory = {}
+        # fetchStockData.py: fetch data from yfinance and save as array
+        stockData = fetch_stock_data(symbol)
+        
+        perDiffVolP1, perDiffVolP2, perDiffVolP3 = volumeSpike(stockData, volP1, volP2, volP3)
+        perDiffSmaP1, perDiffSmaP2, perDiffSmaP3 = sma(stockData, smaP1, smaP2, smaP3)
+        perDiffUpBandP1, perDiffUpBandP2 = bbandUpperRel(stockData, bbandP1, bbandP2, numStdv)
+        stochSignal, perDiffStochThresh, stochIndicator = stoch.py(stockData, stochPeriod, stochThreshold)
+        incResult1, incResult2, incResult3, incResult4 = prettyNum(stockData, inc1, inc2, inc3, inc4, tol1, tol2, tol3, tol4)
+        # macd --- ignore
+        relSubmissionStrength, totalSubmissions, submissionTickerMentions = strengthRedditSubmissions(stockData, recentPeriod, longerPeriod)
+        relCommentStrength, totalComments, commentTickerMentions = strengthRedditDailyComments(stockData)
+        
+        ### Calculate technical score
+        
+        ### Calculate social score
+        
 
-    
+
+        rsi = rsi_filtered_stocks[symbol] # get rsi
+        stock_info = next((item for item in all_filtered_stocks if item['symbol'] == symbol), None) # get exchange
+        
+        # create filled-in arrays
+        result_array = np.array([datetime.today(), symbol, rsi, perDiffVolP1, perDiffVolP2, perDiffVolP3, perDiffSmaP1, perDiffSmaP2, perDiffSmaP3, perDiffUpBandP1, perDiffUpBandP2, stochSignal, perDiffStochThresh, incResult1, incResult2, incResult3, incResult4, relSubmissionStrength, relCommentStrength] )
+        history_array = np.array([datetime.today(),stock_info.get('exchange'), MarketCapMoreThan, PriceMoreThan, VolumeMoreThan, rsiThreshold, rsiPeriod, symbol, rsi, None, None, volP1, volP2, volP3, perDiffVolP1, perDiffVolP2, perDiffVolP3, smaP1, smaP2, smaP3, perDiffSmaP1, perDiffSmaP2, perDiffSmaP3, bbandP1, bbandP2, numStdv, perDiffUpBandP1, perDiffUpBandP2, stochPeriod, stochThreshold, stochIndicator, stochSignal, perDiffStochThresh, inc1, inc2, inc3, inc4, tol1, tol2, tol3, tol4, incResult1, incResult2, incResult3, incResult4, recentPeriod, longerPeriod, totalSubmissions, submissionTickerMentions, relSubmissionStrength, totalComments, commentTickerMentions])
+            
+        # append full array calcs to dataframes
+        gSheetsResultsDF = pd.concat([gSheetsResultsDF, pd.DataFrame(result_array, columns=result_headers)], ignore_index=True)
+        gSheetsHistoryDF = pd.concat([gSheetsHistoryDF, pd.DataFrame(history_array, columns=history_headers)], ignore_index=True)
+
+
+
+
+
+
+    """
     ### call a function to write the full data frame to google sheets OR just return the whole dataframe and have the script write it
-    ## write_to_sheets(gSheetsResultsDF,gSheetsHistoryDF)
+    # write_to_sheets(gSheetsResultsDF,gSheetsHistoryDF)
         
         
-    # fetchStockData.py from yfinance (1 years worth) -> save to google cloud
+    # fetchStockData.py from yfinance (1 years worth) for every symbol and return concanated dataframe
     fetch_stock_data(rsi_filtered_stocks)
-        
+    """
     
     """
     ## Create the master array for each filtered symbol that will contain the calcs/results to append to google sheet
@@ -174,23 +168,143 @@ def main_process(user_variables,result_headers,history_headers):
         print(f"{symbol}: {array}")
     """
     
-    
-    
-
     return print("Main processing completed successfully.")
 
 
-"""""
 # testing within VS code
 if __name__ == "__main__":
     # Example variables for testing
-    test_variables = {
-        "marketCapMoreThan": 300000000,
-        "priceMoreThan": 5,
-        "volumeMoreThan": 500000
+    test_user_variables = {
+    "exchange": "'nyse', 'nasdaq'",
+    "marketCapMoreThan": 300000000,
+    "priceMoreThan": 5,
+    "volumeMoreThan": 500000,
+    "rsiThreshold": 90,
+    "rsiPeriod": 14,
+    "volP1": 60,
+    "volP2": 21,
+    "volP3": 5,
+    "smaP1": 20,
+    "smaP2": 10,
+    "smaP3": 5,
+    "bbandP1": 20,
+    "bbandP2": 10,
+    "numStdv": 2,
+    "stochPeriod": 14,
+    "stochThreshold": 80,
+    "inc1": 100,
+    "inc2": 50,
+    "inc3": 25,
+    "inc4": 10,
+    "tol1": 10,
+    "tol2": 5,
+    "tol3": 3,
+    "tol4": 1.5,
+    "recentPeriod": 2,
+    "longerPeriod": 30
     }
+
+    test_result_headers = [
+    'Date',
+    'Symbol',
+    'RSI',
+    'perDiffVolP1',
+    'perDiffVolP2',
+    'perDiffVolP3',
+    'perDiffSmaP1',
+    'perDiffSmaP2',
+    'perDiffSmaP3',
+    'perDiffUpBandP1',
+    'perDiffUpBandP2',
+    'stochSignal',
+    'perDiffStochThresh',
+    'incResult1',
+    'incResult2',
+    'incResult3',
+    'incResult4',
+    'relSubmissionStrength',
+    'relCommentStrength',
+    'technical score',
+    'social score'
+    ]
+    
+    test_history_headers = [
+    'Date',
+    'exchange',
+    'marketCapMoreThan',
+    'priceMoreThan',
+    'volumeMoreThan',
+    'rsiThreshold',
+    'rsiPeriod',
+    'Symbol',
+    'RSI',
+    'technical score',
+    'social score',
+    'volP1',
+    'volP2',
+    'volP3',
+    'perDiffVolP1',
+    'perDiffVolP2',
+    'perDiffVolP3',
+    'smaP1',
+    'smaP2',
+    'smaP3',
+    'perDiffSmaP1',
+    'perDiffSmaP2',
+    'perDiffSmaP3',
+    'bbandP1',
+    'bbandP2',
+    'numStdv',
+    'perDiffUpBandP1',
+    'perDiffUpBandP2',
+    'stochPeriod',
+    'stochThreshold',
+    'stochIndicator',
+    'stochSignal',
+    'perDiffStochThresh',
+    'inc1',
+    'inc2',
+    'inc3',
+    'inc4',
+    'tol1',
+    'tol2',
+    'tol3',
+    'tol4',
+    'incResult1',
+    'incResult2',
+    'incResult3',
+    'incResult4',
+    'recentPeriod',
+    'longerPeriod',
+    'totalSubmissions',
+    'submissionTickerMentions',
+    'relSubmissionStrength',
+    'totalComments',
+    'commentTickerMentions',
+    'relCommentStrength'
+    ]
     
     # Call the main_process function with the test variables
-    result = main_process(test_variables)
+    result = main_process(test_user_variables, test_result_headers, test_history_headers)
     print(result)
-"""""
+    
+    
+    
+    """"
+     # manual column headers
+    gSheetResultColumns = ['Date', 'Symbol', 'RSI', 'perDiffVolP1', 'perDiffVolP2', 'perDiffVolP3', 'perDiffSmaP1', 'perDiffSmaP2', 'perDiffSmaP3', 'perDiffUpBandP1', 'perDiffUpBandP2', 'stochSignal', 'perDiffStochThresh', 'incResult1', 'incResult2', 'incResult3', 'incResult4', 'relSubmissionStrength', 'relCommentStrength']
+    gSheetHistoryColumns = [ "Date", "exchange", "marketCapMoreThan", "priceMoreThan", "volumeMoreThan", "rsiThreshold", 
+    "rsiPeriod", "Symbol", "RSI", "technical score", "social score", "volP1", "volP2", "volP3", 
+    "perDiffVolP1", "perDiffVolP2", "perDiffVolP3", "smaP1", "smaP2", "smaP3", "perDiffSmaP1", 
+    "perDiffSmaP2", "perDiffSmaP3", "bbandP1", "bbandP2", "numStdv", "perDiffUpBandP1", 
+    "perDiffUpBandP2", "stochPeriod", "stochThreshold", "stochIndicator", "stochSignal", 
+    "perDiffStochThresh", "inc1", "inc2", "inc3", "inc4", "tol1", "tol2", "tol3", "tol4", 
+    "incResult1", "incResult2", "incResult3", "incResult4", "recentPeriod", "longerPeriod", 
+    "totalSubmissions", "submissionTickerMentions", "relSubmissionStrength", "totalComments", 
+    "commentTickerMentions", "relCommentStrength" ]
+   
+    SPREADSHEET_ID = ("")
+    RESULTS_SHEET_NAME = ("") #
+    HISTORY_SHEET_NAME = ("")
+    
+    """
