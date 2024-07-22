@@ -27,7 +27,7 @@ def fetch_and_calculate_rsi_batch(symbols, period, threshold):
         if symbol in data.columns:
             symbol_data = data[symbol]['Close']
             if not symbol_data.empty:
-                rsi = calculate_rsi(symbol_data, period)
+                rsi = calculate_rsi_vectorized(symbol_data, period)
                 rsi_last = rsi.iloc[-1]
                 if rsi_last > threshold:
                     results[symbol] = rsi_last
@@ -36,7 +36,7 @@ def fetch_and_calculate_rsi_batch(symbols, period, threshold):
     return results
 
 def rsiFilter(symbols, rsiPeriod, rsiThreshold):
-    batch_size = 200  # Adjust this value based on your needs and API limitations
+    batch_size = 300  # Adjust this value based on your needs and API limitations
     results = {}
     
     for i in range(0, len(symbols), batch_size):
@@ -45,3 +45,12 @@ def rsiFilter(symbols, rsiPeriod, rsiThreshold):
         results.update(batch_results)
     return results
 
+
+# Example usage
+if __name__ == "__main__":
+    symbols = ["MORF", "IMMR", "ZNTE", "ARDT", "PLD"]  # Add more symbols as needed
+    rsi_period = 14
+    rsi_threshold = 70
+    
+    filtered_symbols = rsiFilter(symbols, rsi_period, rsi_threshold)
+    print(filtered_symbols)
