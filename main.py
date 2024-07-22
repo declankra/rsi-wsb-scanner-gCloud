@@ -15,6 +15,8 @@ from bbandUpperRel import bbandUpperRel
 from stoch import stoch
 from prettyNum import prettyNum
 from strengthRedditSubmissions import strengthRedditSubmissions
+from strengthRedditDailyComments import strengthRedditDailyComments
+import json
 
 
 ### initialize runtime variables
@@ -114,10 +116,10 @@ def main_process(user_variables,result_headers,history_headers):
 
    
     for symbol in rsi_filtered_stocks.keys(): ### FOR EACH SYMBOL in RSI FILTERED STOCKS
-        # symbol_gSheetResult, symbol_gSheetHistory = paramCalcs(symbol) ## call a single function to calculate each parameter for google sheets
-        # create the dictionary
-        # symbol_gSheetResult = {}
-        # symbol_gSheetHistory = {}
+        ### Setup lists to collect data for DataFrames
+        results_data = []
+        history_data = []
+        
         # fetchStockData.py: fetch data from yfinance and save as array
         stockData = fetch_stock_data(symbol)
         
@@ -136,17 +138,31 @@ def main_process(user_variables,result_headers,history_headers):
         
         
         rsi = rsi_filtered_stocks[symbol] # get rsi
-        stock_info = next((item for item in all_filtered_stocks if item['symbol'] == symbol), None) # get all stock info to get exchange
+        # stock_info = next((item for item in all_filtered_stocks if item['symbol'] == symbol), None) # get all stock info to get exchange
+        
+        # Extract exchange from all_filtered_stocks
+        exchange = None
+        for stock in all_filtered_stocks:
+            if stock.get("symbol") == symbol:
+                 exchange = stock.get("exchangeShortName")
+                 break
+        if exchange is None:
+            print(f"Warning: Exchange not found for symbol {symbol}")
         
         # create filled-in arrays
-        result_array = np.array([datetime.today(), symbol, rsi, perDiffVolP1, perDiffVolP2, perDiffVolP3, perDiffSmaP1, perDiffSmaP2, perDiffSmaP3, perDiffUpBandP1, perDiffUpBandP2, stochSignal, perDiffStochThresh, incResult1, incResult2, incResult3, incResult4, relSubmissionStrength, relCommentStrength] )
-        history_array = np.array([datetime.today(),stock_info.get('exchange'), MarketCapMoreThan, PriceMoreThan, VolumeMoreThan, rsiThreshold, rsiPeriod, symbol, rsi, None, None, volP1, volP2, volP3, perDiffVolP1, perDiffVolP2, perDiffVolP3, smaP1, smaP2, smaP3, perDiffSmaP1, perDiffSmaP2, perDiffSmaP3, bbandP1, bbandP2, numStdv, perDiffUpBandP1, perDiffUpBandP2, stochPeriod, stochThreshold, stochIndicator, stochSignal, perDiffStochThresh, inc1, inc2, inc3, inc4, tol1, tol2, tol3, tol4, incResult1, incResult2, incResult3, incResult4, recentPeriod, longerPeriod, totalSubmissions, submissionTickerMentions, relSubmissionStrength, totalComments, commentTickerMentions])
-            
-        # append full array calcs to dataframes
-        gSheetsResultsDF = pd.concat([gSheetsResultsDF, pd.DataFrame(result_array, columns=result_headers)], ignore_index=True)
-        gSheetsHistoryDF = pd.concat([gSheetsHistoryDF, pd.DataFrame(history_array, columns=history_headers)], ignore_index=True)
+        result_array = np.array([datetime.today(), symbol, rsi, perDiffVolP1, perDiffVolP2, perDiffVolP3, perDiffSmaP1, perDiffSmaP2, perDiffSmaP3, perDiffUpBandP1, perDiffUpBandP2, stochSignal, perDiffStochThresh, incResult1, incResult2, incResult3, incResult4, relSubmissionStrength, relCommentStrength, None, None])
+        history_array = np.array([datetime.today(), exchange, MarketCapMoreThan, PriceMoreThan, VolumeMoreThan, rsiThreshold, rsiPeriod, symbol, rsi, None, None, volP1, volP2, volP3, perDiffVolP1, perDiffVolP2, perDiffVolP3, smaP1, smaP2, smaP3, perDiffSmaP1, perDiffSmaP2, perDiffSmaP3, bbandP1, bbandP2, numStdv, perDiffUpBandP1, perDiffUpBandP2, stochPeriod, stochThreshold, stochIndicator, stochSignal, perDiffStochThresh, inc1, inc2, inc3, inc4, tol1, tol2, tol3, tol4, incResult1, incResult2, incResult3, incResult4, recentPeriod, longerPeriod, totalSubmissions, submissionTickerMentions, relSubmissionStrength, totalComments, commentTickerMentions, relCommentStrength])
+        
+         # Instead of concatenating, append the data to lists
+        results_data.append(result_array)
+        history_data.append(history_array)
+        print(f'Successfully appended: {symbol} data')
+        
+    # Create DataFrames after the loop
+    gSheetsResultsDF = pd.DataFrame(results_data, columns=result_headers)
+    gSheetsHistoryDF = pd.DataFrame(history_data, columns=history_headers)
 
-
+    print(gSheetsHistoryDF, gSheetsResultsDF)
 
 
 
@@ -154,24 +170,9 @@ def main_process(user_variables,result_headers,history_headers):
     """
     ### call a function to write the full data frame to google sheets OR just return the whole dataframe and have the script write it
     # write_to_sheets(gSheetsResultsDF,gSheetsHistoryDF)
-        
-        
-    # fetchStockData.py from yfinance (1 years worth) for every symbol and return concanated dataframe
-    fetch_stock_data(rsi_filtered_stocks)
     """
     
-    """
-    ## Create the master array for each filtered symbol that will contain the calcs/results to append to google sheet
-    # List of variables for each array
-    gSheetResultVars = ['Date', 'Symbol', 'RSI', 'perDiffVolP1', 'perDiffVolP2', 'perDiffVolP3', 'perDiffSmaP1', 'perDiffSmaP2', 'perDiffSmaP3', 'perDiffUpBandP1', 'perDiffUpBandP2', 'stochSignal', 'perDiffStochThresh', 'incResult1', 'incResult2', 'incResult3', 'incResult4', 'relSubmissionStrength', 'relCommentStrength']
-    # Get current date
-    current_date = datetime.datetime.now().strftime('%m-%d-%y')
-    # Create a dictionary to store the arrays
-    symbol_arrays = {symbol: [current_date, symbol, rsi_filtered_stocks[symbol]] + [None] * (len(variables) - 3) for symbol in rsi_filtered_stocks.keys()}
-    # Print the result to verify
-    for symbol, array in symbol_arrays.items():
-        print(f"{symbol}: {array}")
-    """
+  
     
     return print("Main processing completed successfully.")
 
@@ -184,7 +185,7 @@ if __name__ == "__main__":
     "marketCapMoreThan": 300000000,
     "priceMoreThan": 5,
     "volumeMoreThan": 500000,
-    "rsiThreshold": 90,
+    "rsiThreshold": 94.6,
     "rsiPeriod": 14,
     "volP1": 60,
     "volP2": 21,
@@ -287,12 +288,10 @@ if __name__ == "__main__":
     'totalComments',
     'commentTickerMentions',
     'relCommentStrength'
-    ]
-    
+]
+
     # Call the main_process function with the test variables
-    result = main_process(test_user_variables, test_result_headers, test_history_headers)
-    print(result)
-    
+    result = main_process(test_user_variables, test_result_headers, test_history_headers)    
     
     
     """"
@@ -312,4 +311,6 @@ if __name__ == "__main__":
     RESULTS_SHEET_NAME = ("") #
     HISTORY_SHEET_NAME = ("")
     
-    """
+    """        
+    
+    # symbol_gSheetResult, symbol_gSheetHistory = paramCalcs(symbol) ## call a single function to calculate each parameter for google sheets

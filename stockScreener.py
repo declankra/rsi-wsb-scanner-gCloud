@@ -16,7 +16,7 @@ def stockScreener(MarketCapMoreThan, PriceMoreThan, VolumeMoreThan, FM_API_KEY):
     # Save the combined list of filtered stocks to Google Cloud Storage
     save_to_cloud_storage(all_filtered_stocks, 'screened_stocks.json', 'daily_screened_stocks')
            
-    return all_filtered_stocks, 200
+    return all_filtered_stocks
 
 def fetch_filtered_stocks_for_exchange(MarketCapMoreThan, PriceMoreThan, VolumeMoreThan, FM_API_KEY, exchange):
     url = "https://financialmodelingprep.com/api/v3/stock-screener"
