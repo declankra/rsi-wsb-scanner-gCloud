@@ -29,7 +29,7 @@ def fetch_and_calculate_rsi_batch(symbols, period, threshold):
     for symbol in symbols:
         try:
             ticker = yf.Ticker(symbol)
-            data = ticker.history(period="1y")
+            data = ticker.history(period="1mo")
             if not data.empty and len(data) > period:
                 rsi = calculate_rsi_vectorized(data['Close'], period)
                 rsi_last = rsi.iloc[-1]
