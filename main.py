@@ -59,9 +59,9 @@ def getVariables(request):
 
 
 def main_process(user_variables,result_headers,history_headers):
-    print("user_variables entered into main_process: ", user_variables) ## TEST
-    print("result_headers entered into main_process: ", result_headers) ## TEST
-    print("history_headers entered into main_process: ", history_headers) ## TEST
+    #print("user_variables entered into main_process: ", user_variables) ## TEST
+    #print("result_headers entered into main_process: ", result_headers) ## TEST
+    #print("history_headers entered into main_process: ", history_headers) ## TEST
 
     ### Extract the initial required user_variables ---- note: rest of the variables will be extracted later
     MarketCapMoreThan = user_variables.get('marketCapMoreThan', None)
@@ -133,7 +133,6 @@ def main_process(user_variables,result_headers,history_headers):
     gSheetsResultsDF = pd.DataFrame(columns=result_headers)
     gSheetsHistoryDF = pd.DataFrame(columns=history_headers)
        
-
    
     for symbol in rsi_filtered_stocks.keys(): ### FOR EACH SYMBOL in RSI FILTERED STOCKS
         ### Setup lists to collect data for DataFrames
