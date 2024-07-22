@@ -32,8 +32,8 @@ def getVariables(request):
         history_headers = request_json['history_headers']
         print('sheet data received successfully')
         # Call the main processing function with the received variables
-        main_process(user_variables,result_headers,history_headers)
-        return 'Data has been successfully appended to sheet', 200
+        gSheetsResultsDF,gSheetsHistoryDF = main_process(user_variables,result_headers,history_headers)
+        return gSheetsResultsDF, gSheetsHistoryDF, 200
     else:
         return 'No variables provided!', 400
 
@@ -162,21 +162,16 @@ def main_process(user_variables,result_headers,history_headers):
     gSheetsResultsDF = pd.DataFrame(results_data, columns=result_headers)
     gSheetsHistoryDF = pd.DataFrame(history_data, columns=history_headers)
 
-    print(gSheetsHistoryDF, gSheetsResultsDF)
-
-
-
 
     """
     ### call a function to write the full data frame to google sheets OR just return the whole dataframe and have the script write it
     # write_to_sheets(gSheetsResultsDF,gSheetsHistoryDF)
     """
     
-  
-    
-    return print("Main processing completed successfully.")
+    print("Main processing completed successfully.")
+    return gSheetsResultsDF, gSheetsHistoryDF
 
-
+""""
 # testing within VS code
 if __name__ == "__main__":
     # Example variables for testing
@@ -294,7 +289,7 @@ if __name__ == "__main__":
     result = main_process(test_user_variables, test_result_headers, test_history_headers)    
     
     
-    """"
+    ""
      # manual column headers
     gSheetResultColumns = ['Date', 'Symbol', 'RSI', 'perDiffVolP1', 'perDiffVolP2', 'perDiffVolP3', 'perDiffSmaP1', 'perDiffSmaP2', 'perDiffSmaP3', 'perDiffUpBandP1', 'perDiffUpBandP2', 'stochSignal', 'perDiffStochThresh', 'incResult1', 'incResult2', 'incResult3', 'incResult4', 'relSubmissionStrength', 'relCommentStrength']
     gSheetHistoryColumns = [ "Date", "exchange", "marketCapMoreThan", "priceMoreThan", "volumeMoreThan", "rsiThreshold", 
@@ -314,3 +309,7 @@ if __name__ == "__main__":
     """        
     
     # symbol_gSheetResult, symbol_gSheetHistory = paramCalcs(symbol) ## call a single function to calculate each parameter for google sheets
+
+
+
+""
