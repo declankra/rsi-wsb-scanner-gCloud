@@ -16,7 +16,7 @@ from stoch import stoch
 from prettyNum import prettyNum
 from strengthRedditSubmissions import strengthRedditSubmissions
 from strengthRedditDailyComments import strengthRedditDailyComments
-import json
+from flask import jsonify
 
 
 ### initialize runtime variables
@@ -33,7 +33,18 @@ def getVariables(request):
         print('sheet data received successfully')
         # Call the main processing function with the received variables
         gSheetsResultsDF,gSheetsHistoryDF = main_process(user_variables,result_headers,history_headers)
-        return gSheetsResultsDF, gSheetsHistoryDF, 200
+        
+        # Convert DataFrames to lists of dictionaries
+        gSheetsResultsDF_json = gSheetsResultsDF.to_dict('records')
+        gSheetsHistoryDF_json = gSheetsHistoryDF.to_dict('records')
+
+        # Create a dictionary with both DataFrames
+        response_data = {
+        'gSheetsResultsDF': gSheetsResultsDF_json,
+        'gSheetsHistoryDF': gSheetsHistoryDF_json
+        }
+        # Return the data as JSON
+        return jsonify(response_data)
     else:
         return 'No variables provided!', 400
 
