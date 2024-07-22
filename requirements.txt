@@ -6,3 +6,4 @@ markupsafe
 google.cloud
 flask
 google-cloud-storage
+praw
