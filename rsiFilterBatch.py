@@ -45,7 +45,7 @@ def rsiFilter(symbols, rsiPeriod, rsiThreshold):
         results.update(batch_results)
     return results
 
-
+""""
 # Example usage
 if __name__ == "__main__":
     symbols = ["MORF", "IMMR", "ZNTE", "ARDT", "PLD"]  # Add more symbols as needed
@@ -54,3 +54,4 @@ if __name__ == "__main__":
     
     filtered_symbols = rsiFilter(symbols, rsi_period, rsi_threshold)
     print(filtered_symbols)
+"""
