@@ -9,6 +9,7 @@ import json
 import requests
 from fetchStockData import fetch_stock_data
 import numpy as np
+from volumeSpike import volumeSpike
 
 
 ### initialize runtime variables
@@ -128,8 +129,7 @@ def main_process(user_variables,result_headers,history_headers):
         
         ### Calculate social score
         
-
-
+        
         rsi = rsi_filtered_stocks[symbol] # get rsi
         stock_info = next((item for item in all_filtered_stocks if item['symbol'] == symbol), None) # get exchange
         
