@@ -13,6 +13,7 @@ from volumeSpike import volumeSpike
 from sma import sma
 from bbandUpperRel import bbandUpperRel
 from stoch import stoch
+from prettyNum import prettyNum
 
 
 ### initialize runtime variables
