@@ -10,6 +10,7 @@ import requests
 from fetchStockData import fetch_stock_data
 import numpy as np
 from volumeSpike import volumeSpike
+from sma import sma
 
 
 ### initialize runtime variables
