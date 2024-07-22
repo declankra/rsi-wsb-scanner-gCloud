@@ -14,6 +14,7 @@ from sma import sma
 from bbandUpperRel import bbandUpperRel
 from stoch import stoch
 from prettyNum import prettyNum
+from strengthRedditSubmissions import strengthRedditSubmissions
 
 
 ### initialize runtime variables
@@ -135,7 +136,7 @@ def main_process(user_variables,result_headers,history_headers):
         
         
         rsi = rsi_filtered_stocks[symbol] # get rsi
-        stock_info = next((item for item in all_filtered_stocks if item['symbol'] == symbol), None) # get exchange
+        stock_info = next((item for item in all_filtered_stocks if item['symbol'] == symbol), None) # get all stock info to get exchange
         
         # create filled-in arrays
         result_array = np.array([datetime.today(), symbol, rsi, perDiffVolP1, perDiffVolP2, perDiffVolP3, perDiffSmaP1, perDiffSmaP2, perDiffSmaP3, perDiffUpBandP1, perDiffUpBandP2, stochSignal, perDiffStochThresh, incResult1, incResult2, incResult3, incResult4, relSubmissionStrength, relCommentStrength] )
