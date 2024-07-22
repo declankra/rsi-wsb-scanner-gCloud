@@ -31,8 +31,15 @@ def getVariables(request):
         result_headers = request_json['result_headers']
         history_headers = request_json['history_headers']
         print('sheet data received successfully')
+        
         # Call the main processing function with the received variables
-        gSheetsResultsDF,gSheetsHistoryDF = main_process(user_variables,result_headers,history_headers)
+        gSheetsResultsDF, gSheetsHistoryDF = main_process(user_variables,result_headers,history_headers)
+        
+        
+         # Ensure the DataFrames are in the correct order
+        gSheetsResultsDF = gSheetsResultsDF[result_headers]
+        gSheetsHistoryDF = gSheetsHistoryDF[history_headers]
+        
         
         # Convert DataFrames to lists of dictionaries
         gSheetsResultsDF_json = gSheetsResultsDF.to_dict('records')
@@ -43,6 +50,8 @@ def getVariables(request):
         'gSheetsResultsDF': gSheetsResultsDF_json,
         'gSheetsHistoryDF': gSheetsHistoryDF_json
         }
+        print("gSheetsResultsDF columns:", gSheetsResultsDF.columns.tolist())
+        print("gSheetsHistoryDF columns:", gSheetsHistoryDF.columns.tolist())
         # Return the data as JSON
         return jsonify(response_data)
     else:
