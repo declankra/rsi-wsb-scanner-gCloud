@@ -4,7 +4,7 @@ from flask import request
 import os
 import pandas as pd
 from stockScreener import stockScreener  # Import the function
-from rsiFilterBatch import rsiFilter # Import the function
+from rsiFilterConcurrent import rsiFilter # Import the function
 import json
 import requests
 from fetchStockData import fetch_stock_data
@@ -86,7 +86,6 @@ def main_process(user_variables,result_headers,history_headers):
         symbols = [item['symbol'] for item in data]
         return symbols
     symbols = read_symbols_from_json(screened_stocks_url)
-    print(symbols)
 
     
     ### Call the rsiFilter function with the symbols and user configured RSI variables to further filter out stocks
