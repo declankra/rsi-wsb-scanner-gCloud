@@ -133,11 +133,12 @@ def main_process(user_variables,result_headers,history_headers):
     gSheetsResultsDF = pd.DataFrame(columns=result_headers)
     gSheetsHistoryDF = pd.DataFrame(columns=history_headers)
        
-   
+    ### Setup lists to collect data for DataFrames
+    results_data = []
+    history_data = []
+        
     for symbol in rsi_filtered_stocks.keys(): ### FOR EACH SYMBOL in RSI FILTERED STOCKS
-        ### Setup lists to collect data for DataFrames
-        results_data = []
-        history_data = []
+       
         
         # fetchStockData.py: fetch data from yfinance and save as array
         stockData = fetch_stock_data(symbol)
