@@ -52,6 +52,7 @@ def getVariables(request):
         }
         print("gSheetsResultsDF columns:", gSheetsResultsDF.columns.tolist())
         print("gSheetsHistoryDF columns:", gSheetsHistoryDF.columns.tolist())
+        
         # Return the data as JSON
         return jsonify(response_data)
     else:
