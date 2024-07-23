@@ -36,7 +36,7 @@ def fetch_and_calculate_rsi_batch(symbols, period, threshold):
     return results
 
 def rsiFilter(symbols, rsiPeriod, rsiThreshold):
-    batch_size = 250  # Adjust this value based on your needs and API limitations
+    batch_size = 200  # Adjust this value based on your needs and API limitations
     results = {}
     
     for i in range(0, len(symbols), batch_size):
