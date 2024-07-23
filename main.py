@@ -4,7 +4,7 @@ from flask import request
 import os
 import pandas as pd
 from stockScreener import stockScreener  # Import the function
-from rsiFilterConcurrent import rsiFilter # Import the function
+from rsiFilterTest import rsiFilter # Import the function
 import json
 import requests
 from fetchStockData import fetch_stock_data
