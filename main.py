@@ -4,7 +4,7 @@ from flask import request
 import os
 import pandas as pd
 from stockScreener import stockScreener  # Import the function
-from rsiFilterConcurrent import rsiFilter # Import the function
+from rsiFilterConcurrent4o import rsi_filter # Import the function
 import json
 import requests
 from fetchStockData import fetch_stock_data
@@ -92,7 +92,7 @@ def main_process(user_variables,result_headers,history_headers):
     ### Call the rsiFilter function with the symbols and user configured RSI variables to further filter out stocks
     rsiPeriod = user_variables.get('rsiPeriod', None)
     rsiThreshold = user_variables.get('rsiThreshold', None)
-    rsi_filtered_stocks = rsiFilter(symbols, rsiPeriod, rsiThreshold) ####!!!!!! add 14, 90 if testing locally
+    rsi_filtered_stocks = rsi_filter(symbols, rsiPeriod, rsiThreshold) ####!!!!!! add 14, 90 if testing locally
     print(rsi_filtered_stocks)
     
     
