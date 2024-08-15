@@ -7,3 +7,4 @@ google.cloud
 flask
 google-cloud-storage
 praw
+aiohttp

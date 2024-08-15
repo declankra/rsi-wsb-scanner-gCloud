@@ -1,10 +1,10 @@
-from concurrent.futures import ThreadPoolExecutor, as_completed
+import aiohttp
+import asyncio
 import yfinance as yf
 import pandas as pd
 import numpy as np
-import logging
 
-# Optimized function to calculate RSI using vectorized operations
+# Function to calculate RSI
 def calculate_rsi_vectorized(data, period):
     delta = data.diff()
     gain = delta.clip(lower=0)
@@ -16,56 +16,39 @@ def calculate_rsi_vectorized(data, period):
     rs = avg_gain / avg_loss
     return 100 - (100 / (1 + rs))
 
-# Function to fetch data and calculate RSI
-def fetch_and_calculate_rsi(symbol, data, period, threshold):
-    try:
-        if data.empty:
-            logging.warning(f"No data available for {symbol}")
-            return None
-        
-        if 'Close' not in data.columns:
-            logging.warning(f"'Close' column not found in data for {symbol}")
-            return None
-        
-        close_data = data['Close']
-        rsi = calculate_rsi_vectorized(close_data, period)
-        rsi_last = rsi.iloc[-1]
-        
-        if rsi_last > threshold:
-            return symbol, rsi_last
-    except Exception as e:
-        logging.error(f"Error processing {symbol}: {e}")
-        return None
+# Asynchronous function to fetch data for a single symbol
+async def fetch_data(session, symbol):
+    ticker = yf.Ticker(symbol)
+    data = ticker.history(period="1mo")
+    return symbol, data
 
-# Optimized function to fetch stock data in batches
-def fetch_stock_data_batch(symbols):
-    try:
-        data = yf.download(symbols, period="1mo", group_by="ticker")
-        return data
-    except Exception as e:
-        logging.error(f"Error fetching batch data: {e}")
-        return None
+# Main function to fetch all data concurrently
+async def fetch_all_data(symbols):
+    async with aiohttp.ClientSession() as session:
+        tasks = [fetch_data(session, symbol) for symbol in symbols]
+        return await asyncio.gather(*tasks)
 
-# Main function to execute the filtering process
-def rsi_filter(symbols, period, threshold):
+# Function to filter stocks by RSI
+def filter_stocks_by_rsi(symbols, period, threshold):
+    loop = asyncio.get_event_loop()
+    stock_data = loop.run_until_complete(fetch_all_data(symbols))
+    
     results = []
-    
-    # Fetch stock data for all symbols in a single batch
-    stock_data = fetch_stock_data_batch(symbols)
-    
-    if stock_data is None:
-        return results
-    
-    # Use ThreadPoolExecutor to process each symbol concurrently
-    with ThreadPoolExecutor(max_workers=10) as executor:
-        future_to_symbol = {
-            executor.submit(fetch_and_calculate_rsi, symbol, stock_data[symbol], period, threshold): symbol 
-            for symbol in symbols
-        }
-        
-        for future in as_completed(future_to_symbol):
-            result = future.result()
-            if result:
-                results.append(result)
+    for symbol, data in stock_data:
+        if data is None or data.empty:
+            continue
+        if 'Close' in data.columns:
+            rsi = calculate_rsi_vectorized(data['Close'], period)
+            if not rsi.empty and rsi.iloc[-1] > threshold:
+                results.append((symbol, rsi.iloc[-1]))
     
     return results
+
+""""
+# Example usage:
+symbols = ['AAPL', 'MSFT', 'GOOGL']
+period = 14
+threshold = 70
+filtered_stocks = filter_stocks_by_rsi(symbols, period, threshold)
+print(filtered_stocks)
+"""
